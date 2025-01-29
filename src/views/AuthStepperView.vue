@@ -1,5 +1,6 @@
 <template>
   <div class="auth__container flex flex-col gap-3 items-center justify-center m-auto p-5">
+
     <SelectButton :options="options" v-model="value" class="select__btn" />
     <div v-if="value === 'Авторизация'" class="flex flex-col gap-3 w-full">
       <InputText placeholder="Электронная почта" type="text" />
