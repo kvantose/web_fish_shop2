@@ -56,9 +56,11 @@
       </div>
     </div>
 
-    <Paginator v-model:page="page" :rows="paginatorRows" :totalRecords="productsCatalog.length"
-      :template="'PrevPageLink PageLinks NextPageLink'" class="flex justify-center items-center gap-5 mb-8">
+    <Paginator v-model:first="page" :rows="9" :totalRecords="catalogData.length"
+      :template="'PrevPageLink PageLinks NextPageLink'" class="flex justify-center items-center gap-5 mb-8"
+      @page="handlePaginator">
     </Paginator>
+
     <FooterDefault />
   </div>
 </template>
@@ -70,28 +72,30 @@ import FiltersCatalog from '@/components/FiltersCatalog.vue';
 import InputText from '@/components/InputText.vue';
 import { catalog } from '@/mock/news-feed';
 import 'primeicons/primeicons.css'
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 
 const likedItems = ref<Record<number, boolean>>({});
 const showStar = ref<Record<number, boolean>>({});
 const showFilter = ref(false);
-const productsCatalog = ref(catalog);
 const search = ref('');
 const selectFilter = ref();
-const maxPagesPaginator = ref(0);
-const paginatorRows = catalog.length / 9
-const page = ref(1)
 
-watch(productsCatalog, (newCatalog, oldCatalog) => {
+const productsCatalog = ref([]);
+const page = ref(0);
+const catalogData = ref(catalog);
+const pageCount = computed(() => Math.ceil(catalogData.value.length / 9));
+const updateProducts = () => {
+  productsCatalog.value = catalogData.value.slice(page.value * 9, (page.value + 1) * 9);
+};
 
-  maxPagesPaginator.value = catalog.length / 9
+const handlePaginator = (event) => {
+  page.value = event.page;
+  window.scrollTo(0, 0);
+  updateProducts();
+};
+watch(page, updateProducts, { immediate: true });
+updateProducts();
 
-  if (productsCatalog.value.length > 3) {
-    productsCatalog.value = productsCatalog.value.slice(0, 9);
-  } else {
-    productsCatalog.value = productsCatalog.value;
-  }
-}, { immediate: true });
 
 const sortOptions = ref([
   {
